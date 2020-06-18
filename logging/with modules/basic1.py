@@ -17,7 +17,7 @@ def multiplication (num1,num2):
 def accept ():
  
  format = '%(asctime)s %(message)s'
- logging.basicConfig(level=logging.DEBUG, filename='/tmp/test.log', datefmt='%a, %d %b %Y %H:%M:%S')
+ logging.basicConfig(level=logging.DEBUG, datefmt='%a, %d %b %Y %H:%M:%S')
  logging.critical("Starting debug")
  
  a = int(input("Enter number 1 : "))
