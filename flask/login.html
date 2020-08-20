@@ -1,0 +1,33 @@
+stage("Building")
+	{
+		echo " ======================= Start Build Stage ================================"
+		echo "Building ${AppBuildName}"
+		if(Type == 'model')
+		{
+			def builddemo = openshift.newBuild ("${AppBaseImage}~${BitBucketSourceRepo}#${BitBucketBranchName}",
+			"--context-dir=src/models", "--name=${AppBuildName}	"--source-secret=bitbucket",
+			"--to=${AppImageLocation}:${AppImageTag}", "--build-arg model=${MLModelPath}",
+			"--push-secret=artifactory", "--to-docker=true"	"--strategy=docker")
+		}
+		else
+		{
+			def builddemo = openshift.newBuild ("${AppBaseImage}~${BitBucketSourceRepo}#${BitBucketBranchName}",
+			"--context-dir=src/${AppBuildName}", "--name=${AppBuildName}	"--source-secret=bitbucket",
+			"--to=${AppImageLocation}:${AppImageTag}", "--push-secret=artifactory", "--to-docker=true" , "--strategy=docker")
+		}
+		bc = openshift.selector("bc","${AppBuildName}").related('builds')
+         	    bc.watch
+		{
+         	          			if (it.count() == 0)
+			{
+         	              			return false
+         	          			}
+         	          			echo "Detected new builds created by buildconfig: ${it.names()}"
+         	          			return true
+         	        		}
+         	        		bc.untilEach
+		{
+			return it.object().status.phase == "Complete"
+		}
+		 	    	echo " ======================= END Build Stage ================================"
+	}
