@@ -11,4 +11,6 @@ for i in range (0,total):
  a = int(input())
  arr.append(a)
 
-print(arr)
+print("The array elements are : " + '' .join(str(arr)))
+
+
